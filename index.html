@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SafeToSpend</title>
+    <meta
+      name="description"
+      content="How much can I actually spend today? SafeToSpend subtracts the bills that are coming and what you normally spend, and shows you what's left."
+    />
+    <link rel="icon" href="./favicon.png" type="image/png" />
+    <link rel="apple-touch-icon" href="./web-app-manifest-512x512.png" />
+    <style>
+      :root {
+        --bg: #fbfaf8;
+        --panel: #ffffff;
+        --ink: #17181a;
+        --muted: #6b6b66;
+        --line: #e6e3dd;
+        --accent: #1f6f4f;
+        --accent-soft: #edf5f1;
+        --seg-bills: #8a8579;
+        --seg-buffer: #c2bdb1;
+        --seg-safe: #00b962;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #121312;
+          --panel: #1a1b1a;
+          --ink: #ecebe7;
+          --muted: #9a9a94;
+          --line: #2a2b2a;
+          --accent: #6dbf97;
+          --accent-soft: #17231d;
+          --seg-bills: #a8a79d;
+          --seg-buffer: #56574f;
+          --seg-safe: #6dbf97;
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        -webkit-text-size-adjust: 100%;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font:
+          16px/1.65 ui-sans-serif,
+          -apple-system,
+          'Segoe UI',
+          Inter,
+          Roboto,
+          Helvetica,
+          Arial,
+          sans-serif;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+      }
+      .wrap {
+        max-width: 660px;
+        margin: 0 auto;
+        padding: 56px 24px 100px;
+      }
+
+      /* ── masthead ────────────────────────────────────────────── */
+      .mast {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        margin-bottom: 64px;
+      }
+      .mast svg {
+        display: block;
+        border-radius: 9px;
+      }
+      .wordmark {
+        font-weight: 600;
+        font-size: 16px;
+        letter-spacing: -0.015em;
+      }
+
+      /* ── hero ────────────────────────────────────────────────── */
+      h1 {
+        font-family:
+          ui-serif, 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia,
+          serif;
+        font-size: clamp(32px, 6vw, 44px);
+        line-height: 1.14;
+        letter-spacing: -0.02em;
+        font-weight: 600;
+        margin: 0 0 18px;
+        text-wrap: balance;
+      }
+      .lede {
+        font-size: 18.5px;
+        line-height: 1.6;
+        color: var(--muted);
+        margin: 0 0 44px;
+        max-width: 52ch;
+      }
+      .lede strong {
+        color: var(--ink);
+        font-weight: 550;
+      }
+
+      /* ── the number ──────────────────────────────────────────── */
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 28px 28px 24px;
+        margin-bottom: 16px;
+      }
+      .eyebrow {
+        font-size: 11.5px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin: 0 0 10px;
+        font-weight: 600;
+      }
+      .hero-num {
+        font-family: ui-serif, 'Iowan Old Style', Palatino, Georgia, serif;
+        font-size: clamp(40px, 9vw, 58px);
+        line-height: 1;
+        letter-spacing: -0.025em;
+        color: var(--accent);
+        margin: 0 0 4px;
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+      }
+      .hero-sub {
+        font-size: 14.5px;
+        color: var(--muted);
+        margin: 0 0 28px;
+      }
+
+      /* stacked decomposition bar — 2px surface gaps between segments */
+      .bar {
+        display: flex;
+        gap: 2px;
+        height: 14px;
+        margin: 0 0 18px;
+      }
+      .bar i {
+        display: block;
+        border-radius: 2px;
+      }
+      .bar i:first-child {
+        border-top-left-radius: 4px;
+        border-bottom-left-radius: 4px;
+      }
+      .bar i:last-child {
+        border-top-right-radius: 4px;
+        border-bottom-right-radius: 4px;
+      }
+
+      .key {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 1px;
+      }
+      .key li {
+        display: grid;
+        grid-template-columns: 11px 1fr auto;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 0;
+        border-bottom: 1px solid var(--line);
+        font-size: 14.5px;
+      }
+      .key li:last-child {
+        border-bottom: 0;
+        padding-bottom: 0;
+      }
+      .sw {
+        width: 11px;
+        height: 11px;
+        border-radius: 3px;
+      }
+      .key .amt {
+        font-variant-numeric: tabular-nums;
+        color: var(--muted);
+        font-size: 14px;
+      }
+      .key .is-safe {
+        font-weight: 600;
+      }
+      .key .is-safe .amt {
+        color: var(--ink);
+        font-weight: 600;
+      }
+      .caption {
+        font-size: 13px;
+        color: var(--muted);
+        margin: 14px 0 0;
+        line-height: 1.55;
+      }
+
+      /* ── prose ───────────────────────────────────────────────── */
+      h2 {
+        font-size: 15.5px;
+        letter-spacing: -0.005em;
+        margin: 44px 0 14px;
+        font-weight: 600;
+      }
+      p {
+        margin: 0 0 15px;
+      }
+      .points {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      .points li {
+        position: relative;
+        padding-left: 20px;
+        margin-bottom: 11px;
+        color: var(--muted);
+        font-size: 15.5px;
+      }
+      .points li::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 9px;
+        width: 7px;
+        height: 7px;
+        border-radius: 2px;
+        background: var(--accent);
+        opacity: 0.55;
+      }
+      .points strong {
+        color: var(--ink);
+        font-weight: 600;
+      }
+
+      .note {
+        background: var(--accent-soft);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 18px 20px;
+        font-size: 15px;
+        margin: 0;
+      }
+      .note p:last-child {
+        margin-bottom: 0;
+      }
+
+      a {
+        color: var(--accent);
+        text-decoration: none;
+        border-bottom: 1px solid transparent;
+      }
+      a:hover {
+        border-bottom-color: currentColor;
+      }
+      footer {
+        margin-top: 64px;
+        padding-top: 22px;
+        border-top: 1px solid var(--line);
+        font-size: 14px;
+        color: var(--muted);
+        display: flex;
+        gap: 18px;
+        flex-wrap: wrap;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="mast">
+        <svg width="30" height="30" viewBox="0 0 64 64" aria-hidden="true">
+          <rect width="64" height="64" rx="15" fill="#1F6F4F" />
+          <rect x="22" y="12" width="20" height="9" rx="3" fill="#fff" />
+          <rect
+            x="22"
+            y="23"
+            width="20"
+            height="13"
+            rx="3"
+            fill="#fff"
+            fill-opacity=".45"
+          />
+          <rect
+            x="22"
+            y="38"
+            width="20"
+            height="14"
+            rx="3"
+            fill="#fff"
+            fill-opacity=".26"
+          />
+        </svg>
+        <span class="wordmark">SafeToSpend</span>
+      </header>
+
+      <h1>Your balance is not your budget.</h1>
+      <p class="lede">
+        Five thousand in checking feels like five thousand until rent clears.
+        SafeToSpend subtracts the bills that are genuinely coming, holds back
+        what you normally spend on everyday life, and shows you
+        <strong>one number</strong> &mdash; what's actually yours today.
+      </p>
+
+      <section class="card" aria-labelledby="num-label">
+        <p class="eyebrow" id="num-label">Safe to spend</p>
+        <p class="hero-num">$550.74</p>
+        <p class="hero-sub">of $5,746.23 available &middot; 10-day horizon</p>
+
+        <div
+          class="bar"
+          role="img"
+          aria-label="Of $5,746.23 available: bills and set-aside $2,660.51, everyday buffer $2,534.98, safe to spend $550.74."
+        >
+          <i style="width: 46.3%; background: var(--seg-bills)"></i>
+          <i style="width: 44.12%; background: var(--seg-buffer)"></i>
+          <i style="width: 9.58%; background: var(--seg-safe)"></i>
+        </div>
+
+        <ul class="key">
+          <li>
+            <span class="sw" style="background: var(--seg-bills)"></span>
+            <span>Bills &amp; set aside</span>
+            <span class="amt">&minus;$2,660.51</span>
+          </li>
+          <li>
+            <span class="sw" style="background: var(--seg-buffer)"></span>
+            <span>Everyday buffer &middot; 14 days at $181/day</span>
+            <span class="amt">&minus;$2,534.98</span>
+          </li>
+          <li class="is-safe">
+            <span class="sw" style="background: var(--seg-safe)"></span>
+            <span>Safe to spend</span>
+            <span class="amt">$550.74</span>
+          </li>
+        </ul>
+
+        <p class="caption">
+          The buffer is measured from your own trailing 90 days, not a number
+          someone picked. Both the horizon and the buffer are adjustable &mdash;
+          everything recomputes.
+        </p>
+      </section>
+
+      <h2>What makes it different</h2>
+      <ul class="points">
+        <li>
+          <strong>It measures you, not an average.</strong> The everyday buffer
+          comes from your real spending history.
+        </li>
+        <li>
+          <strong>It admits what it doesn't know.</strong> Variable bills are
+          flagged rather than guessed at; dates are stated plainly because dates
+          are the reliable part.
+        </li>
+        <li>
+          <strong>The rules are yours.</strong> When a transaction lands in the
+          wrong category, you fix the rule &mdash; not a support ticket.
+        </li>
+        <li>
+          <strong>Your data stays on your machine.</strong> No cloud account, no
+          server-side copy.
+        </li>
+      </ul>
+
+      <h2>Bank connections</h2>
+      <div class="note">
+        <p>
+          SafeToSpend uses
+          <a href="https://plaid.com" rel="noopener">Plaid</a> to read balances
+          and transactions from accounts you explicitly connect. It requests
+          read access only &mdash; it cannot move money, and it never sees your
+          banking password.
+        </p>
+        <p>
+          Review or revoke any connection at
+          <a href="https://my.plaid.com" rel="noopener">my.plaid.com</a>.
+        </p>
+      </div>
+
+      <footer>
+        <a href="./privacy.html">Privacy policy</a>
+        <span>A personal project</span>
+      </footer>
+    </div>
+  </body>
+</html>
