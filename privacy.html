@@ -261,6 +261,37 @@
         here with a new &ldquo;last updated&rdquo; date.
       </p>
 
+      <p>
+        This is a personal, single-user application. It has no other users to
+        support. Questions about this policy can be directed to the developer:
+        <br />
+
+        <a
+          class="protected-email"
+          href="#"
+          data-e="bWFpbHRvOm5hdGhhbi5hcml6b25hQGdtYWlsLmNvbQ=="
+        >
+          email the developer
+        </a>
+        <noscript>
+          (JavaScript is required to show this address &mdash; or reach me via
+          <a href="https://github.com/achord" rel="noopener"
+            >github.com/achord</a
+          >)
+        </noscript>
+      </p>
+
+      <script>
+        // The address is base64'd so it never appears as text in the page source.
+        // Scrapers that only read HTML find nothing; the link works normally.
+        document.querySelectorAll('.protected-email').forEach(function (el) {
+          var href = atob(el.dataset.e)
+          el.href = href
+          el.textContent = href.replace('mailto:', '')
+          el.removeAttribute('data-e')
+        })
+      </script>
+
       <footer>
         <a href="./index.html">&larr; Back to SafeToSpend</a>
       </footer>
