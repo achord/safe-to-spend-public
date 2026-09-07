@@ -3,13 +3,62 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>SafeToSpend</title>
+
+    <title>SafeToSpend — Know what's safe to spend today</title>
     <meta
       name="description"
-      content="How much can I actually spend today? SafeToSpend subtracts the bills that are coming and what you normally spend, and shows you what's left."
+      content="How much can I spend today? SafeToSpend deducts upcoming bills and your own everyday spending rate from your balance, and shows what's genuinely safe to spend."
     />
+    <link rel="canonical" href="https://YOURDOMAIN/" />
+
+    <!-- Open Graph / social -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://YOURDOMAIN/" />
+    <meta property="og:title" content="Your balance is not your budget." />
+    <meta
+      property="og:description"
+      content="SafeToSpend subtracts the bills that are coming and what you normally spend, and shows the one number that's actually yours today."
+    />
+    <meta
+      property="og:image"
+      content="https://YOURDOMAIN/img/social-card.png"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content="SafeToSpend" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <meta
+      name="theme-color"
+      content="#00b962"
+      media="(prefers-color-scheme: light)"
+    />
+    <meta
+      name="theme-color"
+      content="#121312"
+      media="(prefers-color-scheme: dark)"
+    />
+
     <link rel="icon" href="./favicon.png" type="image/png" />
     <link rel="apple-touch-icon" href="./web-app-manifest-512x512.png" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "SafeToSpend",
+        "applicationCategory": "FinanceApplication",
+        "operatingSystem": "Web",
+        "description": "Personal budgeting tool that subtracts upcoming bills and measured everyday spending from your account balance to show what is safe to spend.",
+        "url": "https://YOURDOMAIN/",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        }
+      }
+    </script>
+
     <style>
       :root {
         --bg: #fbfaf8;
@@ -287,12 +336,13 @@
         />
       </header>
 
-      <h1>Your balance is not your budget.</h1>
+      <h1>Less Planning. <br />More Answers.</h1>
       <p class="lede">
-        Five thousand in checking feels like five thousand until rent clears.
+        Two thousand in checking feels like two thousand until rent clears.
         SafeToSpend subtracts the bills that are genuinely coming, holds back
-        what you normally spend on everyday life, and shows you
-        <strong>one number</strong> &mdash; what's actually yours today.
+        what you actually spend in a normal week, and gives you
+        <strong>one number</strong> &mdash; what's yours today, not what the
+        bank happens to be holding.
       </p>
 
       <section class="card" aria-labelledby="num-label">
@@ -335,24 +385,48 @@
         </p>
       </section>
 
+      <h2>How it works</h2>
+      <ul class="points">
+        <li>
+          <strong>It reads your accounts.</strong> Balances and transactions
+          come straight from your bank, so the starting number is the real one,
+          pending included.
+        </li>
+        <li>
+          <strong>It finds the bills.</strong> Repeating charges are identified
+          from your own history and projected forward, with variable amounts
+          marked as estimates rather than dressed up as facts.
+        </li>
+        <li>
+          <strong>It holds back your normal week.</strong> Groceries, gas,
+          coffee &mdash; the spending that isn't a bill but happens anyway
+          &mdash; averaged from your trailing 90 days.
+        </li>
+        <li>
+          <strong>What's left is yours.</strong> Move the horizon and the
+          buffer; the number recomputes as you go.
+        </li>
+      </ul>
+
       <h2>What makes it different</h2>
       <ul class="points">
         <li>
-          <strong>It measures you, not an average.</strong> The everyday buffer
-          comes from your real spending history.
+          <strong>The buffer is measured, not guessed.</strong> Most apps ask
+          you to invent a monthly number. This one reads what you already spend.
         </li>
         <li>
-          <strong>It admits what it doesn't know.</strong> Variable bills are
-          flagged rather than guessed at; dates are stated plainly because dates
-          are the reliable part.
+          <strong>It admits what it doesn't know.</strong> A variable bill is
+          shown as a range, not a false precision. Dates are stated plainly,
+          because dates are the reliable part.
         </li>
         <li>
-          <strong>The rules are yours.</strong> When a transaction lands in the
-          wrong category, you fix the rule &mdash; not a support ticket.
+          <strong>The rules are yours.</strong> When something lands in the
+          wrong category you edit the rule and it stays fixed &mdash; no support
+          ticket, no black box.
         </li>
         <li>
           <strong>Your data stays on your machine.</strong> No cloud account, no
-          server-side copy.
+          server-side copy, nothing to breach.
         </li>
       </ul>
 

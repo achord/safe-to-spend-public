@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Privacy Policy · SafeToSpend</title>
     <link rel="icon" href="./favicon.png" type="image/png" />
+    <link rel="apple-touch-icon" href="./web-app-manifest-512x512.png" />
     <style>
       :root {
         --bg: #fbfaf8;
@@ -49,18 +50,20 @@
         margin: 0 auto;
         padding: 64px 24px 96px;
       }
-      .mark {
+      .mast {
         display: flex;
         align-items: center;
         gap: 11px;
-        font-weight: 600;
-        margin-bottom: 40px;
+        margin-bottom: 64px;
       }
-      .dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background: var(--accent);
+      .mast svg {
+        display: block;
+        border-radius: 9px;
+      }
+      .wordmark {
+        font-weight: 600;
+        font-size: 16px;
+        letter-spacing: -0.015em;
       }
       h1 {
         font-size: 30px;
@@ -130,47 +133,27 @@
   </head>
   <body>
     <div class="wrap">
-      <div class="mark">
-        <svg
-          width="26"
-          height="26"
-          viewBox="0 0 64 64"
-          aria-hidden="true"
-          style="display: block; border-radius: 8px"
-        >
-          <rect width="64" height="64" rx="15" fill="#1F6F4F" />
-          <rect x="22" y="12" width="20" height="9" rx="3" fill="#fff" />
-          <rect
-            x="22"
-            y="23"
-            width="20"
-            height="13"
-            rx="3"
-            fill="#fff"
-            fill-opacity=".45"
-          />
-          <rect
-            x="22"
-            y="38"
-            width="20"
-            height="14"
-            rx="3"
-            fill="#fff"
-            fill-opacity=".26"
-          />
-        </svg>
-        <span>SafeToSpend</span>
-      </div>
+      <header class="mast">
+        <img
+          alt="Safe to Spend Logo"
+          src="img/logos/horizontal/1x/safe-to-spend_logo_horizontal_1x.png"
+          style="
+            height: 45px;
+            width: auto;
+            margin-left: -10px;
+            margin-bottom: -30px;
+          "
+        />
+      </header>
 
       <h1>Privacy Policy</h1>
       <p class="meta">Last updated 7 September 2026</p>
 
       <div class="callout">
         <p>
-          <strong>The short version.</strong> SafeToSpend is a personal
-          budgeting tool. Your financial data is stored on your own computer. It
-          is not uploaded to a server we run, it is not sold, and it is not
-          shared with anyone.
+          SafeToSpend is a personal budgeting tool. Your financial data is
+          stored on your own computer. It is not uploaded to a server we run, it
+          is not sold, and it is not shared with anyone.
         </p>
       </div>
 
